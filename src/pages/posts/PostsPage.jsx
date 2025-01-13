@@ -1,57 +1,13 @@
-import { useState, useEffect } from "react";
+import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"
-import AppCard from "../../components/AppCard";
-const apiUrl = import.meta.env.VITE_API_URL;
+import PostsList from "../../components/PostsList";
+import GlobalContext from "../../contexts/GlobalContext";
 
 function PostsPage() {
 
-    const [posts, setPosts] = useState([]);
-    const [filter, setFilter] = useState("all")
-    const [tag, setTag] = useState([])
     const navigate = useNavigate();
-
-    useEffect(() => {
-        getPosts();
-    }, [filter])
-
-    useEffect(() => {
-        getTags();
-    }, []);
-
-    const getPosts = (resp) => {
-        let url = `${apiUrl}/posts`;
-
-        if (filter !== "all") {
-            url += `?tags=${filter}`;
-        }
-
-        axios.get(url)
-            .then((resp) => {
-                setPosts(resp.data.data)
-
-            })
-            .catch((err) => {
-                console.error("Errore durante il recupero dati:", err)
-            })
-    }
-
-    const getTags = () => {
-        axios.get(`${apiUrl}/tags`)
-            .then((resp) => {
-                setTag(resp.data.tags)
-            })
-    }
-
-    const removePost = (postToRemove) => {
-        axios.delete(`http://localhost:3000/posts/${postToRemove.id}`)
-            .then(() => {
-                setPosts(posts.filter((curPost) => curPost.id !== postToRemove.id));
-            })
-            .catch((err) => {
-                console.error("Errore durante la cancellazione del post:", err);
-            });
-    };
+    const globalProviderValue = useContext(GlobalContext);
+    const {filter, setFilter, tag} = globalProviderValue;
 
     return (
         <>
@@ -82,25 +38,7 @@ function PostsPage() {
                     </select>
                 </section>
 
-                <section>
-                    {posts.length > 0 ? (
-                        <ul className="container row">
-                            {posts.map((curPost) => (
-                                <AppCard
-                                    key={curPost.id}
-                                    curPost={curPost}
-                                    onRemove={() => {
-                                        removePost(curPost)
-                                    }}
-                                />
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="empty-list container row">
-                            La tua lista è vuota! Aggiungi qualche Post!
-                        </p>
-                    )}
-                </section>
+                <PostsList />
             </main>
 
         </>

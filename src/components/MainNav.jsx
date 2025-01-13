@@ -1,20 +1,11 @@
 import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import GlobalContext from "../contexts/GlobalContext";
 
 function MainNav() {
-    const paths = [
-        {
-            path: "/",
-            title: "Home",
-        },
-        {
-            path: "/posts",
-            title: "Posts",
-        },
-        {
-            path: "/about",
-            title: "About",
-        },
-    ]
+
+    const globalProviderValue = useContext(GlobalContext);
+    const {paths} = globalProviderValue;
 
     return (
         <nav>
